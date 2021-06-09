@@ -8,7 +8,7 @@ ap.add_argument("-f", help = "Output filenames suffix", required = True)
 opts = ap.parse_args()
 seeds = opts.s
 suffix = opts.f
-
+#
 # 3. Selecting 10k neighborhoods
 os.system('python3 SelectNeighborhood.py -p ./Database/CDS.pty -s ./' + seeds + ' -o Vicinity' + suffix + '.tsv -d 10000')
 

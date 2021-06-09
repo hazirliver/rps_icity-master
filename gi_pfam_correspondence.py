@@ -8,7 +8,7 @@ opts = ap.parse_args()
 suffix = opts.f
 
 icity = pd.read_csv('gi_cluster_id' + suffix + '.csv', header = 0, names = ["icity_cluster_id","gi", "icity_score"], dtype=str)
-rps = pd.read_csv('gi_pfam_named' + suffix + '.csv', header = 0, names = ["gi","pfam"], dtype=str)
+rps = pd.read_csv('gi_pfam_named' + suffix + '.tsv', header = 0, names = ["gi","pfam"], dtype=str, sep = "\t")
 vicinity = pd.read_csv('VicinityPermissiveClustsLinear' + suffix + '.tsv', header = None, names = ["gi","composition"], sep = "\t", dtype=str)
 
 pfam = pd.merge(rps, vicinity['gi'], on = "gi", how = "inner")

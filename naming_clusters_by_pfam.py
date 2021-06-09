@@ -12,7 +12,7 @@ GI_PFAM = {}
 CLUSTER = {}
 
 # Загружаем все именованные gi
-with open('gi_pfam_named' + suffix + '.csv', "r") as gi_named:
+with open('gi_pfam_named' + suffix + '.tsv', "r") as gi_named:
     for _ in range(1):
         next(gi_named)
     for line in gi_named:
