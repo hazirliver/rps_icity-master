@@ -11,29 +11,15 @@ opts = ap.parse_args()
 suffix = opts.f
 
 
-def run_rps_blast(eval):
-    command_rps_blast = 'rpsblast+ -query ./Vicinity' + suffix + '.faa -db ./Database_pfam/Cog_Pfam -out ./rps_blast_results' + suffix + '.tsv -evalue ' + str(eval) + ' -outfmt \"6 qacc stitle evalue\"'
-    os.system(command_rps_blast)
+def run_hmmsearch(eval):
+    command_hmmsearch = 'hmmsearch --tblout hmm_out' + suffix + '.txt -E 1e-5 --cpu 24 ./pfam/Pfam-A.hmm ./Vicinity' + suffix + '.faa'
+    os.system(command_hmmsearch)
 
-def sort_rps_blast():
-    df = pd.read_csv('./rps_blast_results' + suffix + '.tsv', sep="\t", header=None)
+def sort_hmmsearch():
 
-    first_column_tmp = (df[0].str.rstrip("|")).str.split("|")
-    data = first_column_tmp.to_list()
-    names = ["tmp1", "gi", "tmp2", "gb"]
-    new_first_col = (pd.DataFrame(data, columns=names)).drop(['tmp1', 'tmp2'], axis=1)
+    os.system("Rscript --vanilla parse_hmmer3_tbloutput.R " + suffix)
 
-    second_column_tmp = df[1].str.split(",", n=2)
-    data = second_column_tmp.to_list()
-    names = ["pfam_cog_id", "pfam_cog_smth_add", "pfam_cog_name"]
-    new_sec_col = pd.DataFrame(data, columns=names)
-
-    df_tmp = pd.concat([new_first_col, new_sec_col, df[2]], axis=1)
-    df_tmp.columns = ["gi", "gb", "pfam_cog_id", "pfam_cog_smth_add", "pfam_cog_name", "eval"]
-    df_new = df_tmp.loc[df_tmp.groupby('gi').eval.idxmin()]
-
-    gi_pfam = df_new[["gi", "pfam_cog_id"]]
-    gi_pfam.to_csv('gi_pfam_named' + suffix + '.csv', index=False, header=True)
+    df_new = pd.read_csv('./gi_pfam_named' + suffix + '.tsv', sep="\t", header=0)
 
     pfam_cog_clusters_groups = df_new.groupby("pfam_cog_id")
     clusters = [pfam_cog_clusters_groups.get_group(x) for x in pfam_cog_clusters_groups.groups]
@@ -59,8 +45,8 @@ def sort_rps_blast():
                 out.write("\n")
 
 def clustering(eval):
-    run_rps_blast(eval)
-    sort_rps_blast()
+    run_hmmsearch(eval)
+    sort_hmmsearch()
 
 
 clustering(config.ICITY_CONFIG_INPUT["RpsBlastEval"])
